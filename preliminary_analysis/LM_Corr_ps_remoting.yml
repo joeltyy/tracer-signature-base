@@ -1,0 +1,54 @@
+title: New WinRM Process Creation
+id: 67c1df31-c11e-497e-b978-c24daf918d94
+name: winrm_process_creation
+description: Detects a new process created by WinRM
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4688
+    NewProcessName|endswith:
+      - "\\wsmprovhost.exe"
+  condition: selection
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+include-in-output: false
+---
+title: New Process Creation by WinRM process
+id: 
+name: process_creation_by_winrm_process
+description: Detects a new process created by WinRM
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4688
+    ParentProcessName|endswith:
+      - "\\wsmprovhost.exe"
+  condition: selection
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+include-in-output: false
+---
+title: WinRM based lateral movement (PS Remoting)
+id: ec232a24-7d7c-4476-8069-bf5543008f8f
+name: winrm_lateral_movement
+description: Detects WinRM-based lateral movement (PS Remoting)
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins
+correlation:
+  type: temporal_ordered
+  rules:
+    - smb_network_logon
+    - winrm_process_creation
+    - process_creation_by_winrm_process
+  timespan: 2m

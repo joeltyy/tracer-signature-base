@@ -1,0 +1,47 @@
+title: RDP outgoing connection - initiated
+id: 1fa1e454-65aa-4202-8b14-a6a319a5a5d8
+name: rdp_outgoing_initiated
+description: Searches for outgoing RDP connections that were initiated
+logsource:
+  product: windows
+  service: terminalservices-rdpclient
+detection:
+  selection_eventid:
+    EventID: 1102
+  condition: selection_eventid
+further-investigation: true
+further-remarks: 
+  - KIV
+include-in-output: false
+---
+title: RDP outgoing connection - successful
+id: d11e6795-084c-4221-90be-b15e3855c9ac
+name: rdp_outgoing_successful
+description: Searches for outgoing RDP connections that are successful
+logsource:
+  product: windows
+  service: terminalservices-rdpclient
+detection:
+  selection_eventid:
+    EventID: 1103
+  condition: selection_eventid
+further-investigation: true
+further-remarks: 
+  - KIV
+include-in-output: false
+---
+title: Outgoing RDP connection
+id: 864fdd68-7d27-457c-8a7b-2cf34bc3ec6f
+name: rdp_outgoing
+description: Detects an outgoing RDP connection that was successful
+level: informational
+further-investigation: true
+further-remarks: 
+  - KIV
+  - Check with client if legitimate
+correlation:
+  type: temporal_ordered
+  rules:
+    - rdp_outgoing_initiated
+    - rdp_outgoing_successful
+  timespan: 30s

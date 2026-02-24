@@ -1,0 +1,32 @@
+title: Scheduled task creation
+id: ae706fd3-e0d1-4d13-8b6a-dc53aae96035
+name: scheduled_task_creation
+description: Detects creation of scheduled tasks via the Security Event Log
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4698
+  condition: selection
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins
+---
+title: Possible Remote Scheduled Task
+id: 0cc7e43f-7187-4568-a851-71bf3dd47b6d
+name: susp_remote_scheduled_task
+description: Detects creation of a remote scheduled task, characterized by network logon and the scheduled task creation
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins
+correlation:
+  type: temporal_ordered
+  rules:
+    - smb_network_logon
+    - scheduled_task_creation
+  timespan: 2m

@@ -1,0 +1,48 @@
+title: PsExec service creation - System Windows Event Log
+id: 8012a2c1-3344-4cc5-ad8b-827c269654b6
+name: psexec_system_service_creation
+description: Detects creation of PsExec service within the System Windows Event Log, commonly used for lateral movement
+logsource:
+  product: windows
+  service: system
+detection:
+  selection:
+    EventID: 7045
+    ServiceName: "PSEXESVC"
+  condition: selection
+level: high
+include-in-output: false
+---
+title: PsExec ADMIN$ file staging
+id: e501fc09-8d0e-4b1b-bb21-6dd13058adaf
+name: psexec_admin_file_share_write
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 5145
+    ShareName|contains: "ADMIN$"
+    RelativeTargetName|startswith: "PSEXEC-"
+  condition: selection
+level: high
+include-in-output: false
+---
+title: PsExec lateral movement with source attribution
+id: 83bc0080-ad8f-45fa-af1e-7b7b6ffd7f85
+description: Detects PsExec lateral movement via PsExec Service Creation, together with source Host Information
+logsource:
+  product: windows
+correlation:
+  type: temporal
+  timespan: 2m
+  rules:
+    - psexec_system_service_creation
+    - psexec_admin_file_share_write
+  group-by:
+    - Computer
+level: critical
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins

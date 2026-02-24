@@ -1,0 +1,33 @@
+title: ADMIN$ share access on remote host
+id: 350163d7-1f3e-476e-9f30-ca2c66e9617f
+name: admin_share_access
+description: Detects access to the ADMIN$ administrative share, commonly used during lateral movement
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 5140
+    ShareName|contains: "ADMIN$"
+  condition: selection
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+include-in-output: false
+---
+title: SMB-based lateral movement
+id: 30b34987-a6db-44ca-b9db-fe98337ca02e
+name: smb_lateral_movement
+description: Detects SMB lateral movement via network logon followed by ADMIN$ access
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins
+correlation:
+  type: temporal_ordered
+  rules:
+    - smb_network_logon
+    - admin_share_access
+  timespan: 2m

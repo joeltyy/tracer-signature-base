@@ -1,0 +1,17 @@
+title: SMB network logon to remote host
+id: b44cf6b8-a078-4cab-ac4b-0ff404fa0ac4
+name: smb_network_logon
+description: Detects successful network logons that may indicate SMB-based lateral movement
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    LogonType: 3
+  condition: selection
+level: informational
+further-investigation: true
+further-remarks:
+  - KIV
+include-in-output: false

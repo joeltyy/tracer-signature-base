@@ -1,0 +1,34 @@
+title: WMI remote process execution
+id: c37efd86-b9b9-4f7c-816b-6876bb8130bc
+name: wmi_remote_process_execution
+description: Detects remote process execution via WMI
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4688
+    ParentProcessName|endswith:
+      - "\\WmiPrvSE.exe"
+  condition: selection
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+include-in-output: false
+---
+title: WMI Remoting
+id: 43881d86-4179-438d-8487-0f6dbbe427e0
+name: wmi_remoting
+description: Detects WMI-based lateral movement via network logon and remote execution, otherwise known as WMI Remoting
+level: medium
+further-investigation: true
+further-remarks:
+  - KIV
+  - Check with client if legitimate, Escalate immediately if not performed by sysadmins
+correlation:
+  type: temporal_ordered
+  rules:
+    - smb_network_logon
+    - wmi_remote_process_execution
+  timespan: 2m
